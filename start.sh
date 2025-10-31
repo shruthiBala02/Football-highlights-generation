@@ -1,44 +1,50 @@
 #!/bin/bash
-set -e  # Exit immediately if any command fails
+set -e  # Exit immediately on error
 ROOT_DIR="$(dirname "$(realpath "$0")")"
 echo "🚀 Starting build process from $ROOT_DIR"
 
 # --------------------------
-# 1️⃣  Build the frontend
+# 1️⃣ Build React frontend
 # --------------------------
-if [ -d "$ROOT_DIR/React" ]; then
-  FRONTEND_DIR="$ROOT_DIR/React"
-elif [ -d "$ROOT_DIR/react" ]; then
-  FRONTEND_DIR="$ROOT_DIR/react"
+FRONTEND_DIR="$ROOT_DIR/React/football-highlights"
+
+if [ -d "$FRONTEND_DIR" ]; then
+  echo "📦 Found React app at: $FRONTEND_DIR"
+  cd "$FRONTEND_DIR"
+
+  if [ ! -f "package.json" ]; then
+    echo "❌ package.json not found in $FRONTEND_DIR"
+    exit 1
+  fi
+
+  echo "📦 Installing frontend dependencies..."
+  npm install --legacy-peer-deps
+
+  echo "🏗️  Building React app..."
+  npm run build
+  echo "✅ React build completed successfully."
+  cd "$ROOT_DIR"
 else
-  echo "❌ No React folder found. Expected 'React' or 'react' inside project root."
+  echo "❌ React app directory not found at React/football-highlights!"
   exit 1
 fi
-
-echo "📦 Installing frontend dependencies in: $FRONTEND_DIR"
-cd "$FRONTEND_DIR"
-
-# Only install if package.json exists
-if [ ! -f "package.json" ]; then
-  echo "❌ package.json not found in React directory!"
-  exit 1
-fi
-
-npm install --legacy-peer-deps
-echo "🏗️  Building React app..."
-npm run build
-echo "✅ React build completed successfully."
 
 # --------------------------
-# 2️⃣  Start the backend
+# 2️⃣ Start FastAPI backend
 # --------------------------
-cd "$ROOT_DIR/football-backend"
+BACKEND_DIR="$ROOT_DIR/football-backend"
 
-# Check backend main file
-if [ ! -f "main.py" ]; then
-  echo "❌ Could not find main.py in football-backend!"
+if [ -d "$BACKEND_DIR" ]; then
+  cd "$BACKEND_DIR"
+
+  if [ ! -f "main.py" ]; then
+    echo "❌ main.py not found in $BACKEND_DIR"
+    exit 1
+  fi
+
+  echo "🎯 Starting FastAPI backend..."
+  exec uvicorn main:app --host 0.0.0.0 --port 10000
+else
+  echo "❌ Backend directory football-backend not found!"
   exit 1
 fi
-
-echo "🎯 Starting FastAPI backend with uvicorn..."
-exec uvicorn main:app --host 0.0.0.0 --port 10000

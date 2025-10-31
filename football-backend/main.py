@@ -229,3 +229,6 @@ async def process_video(file: UploadFile = File(...)):
         print(err_msg)
         await broadcast_status(err_msg)
         return {"status": "error", "message": str(e)}
+from fastapi.staticfiles import StaticFiles
+
+app.mount("/", StaticFiles(directory="../React/football-highlights/build", html=True), name="frontend")
