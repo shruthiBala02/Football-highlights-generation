@@ -1,26 +1,44 @@
 #!/bin/bash
-set -e
+set -e  # Exit immediately if any command fails
+ROOT_DIR="$(dirname "$(realpath "$0")")"
+echo "🚀 Starting build process from $ROOT_DIR"
 
-echo "🚀 Starting build process..."
-
-# Build frontend (works for 'React' or 'react')
-if [ -d "React" ]; then
-  cd React
-elif [ -d "react" ]; then
-  cd react
+# --------------------------
+# 1️⃣  Build the frontend
+# --------------------------
+if [ -d "$ROOT_DIR/React" ]; then
+  FRONTEND_DIR="$ROOT_DIR/React"
+elif [ -d "$ROOT_DIR/react" ]; then
+  FRONTEND_DIR="$ROOT_DIR/react"
 else
-  echo "❌ React folder not found!"
+  echo "❌ No React folder found. Expected 'React' or 'react' inside project root."
   exit 1
 fi
 
-echo "📦 Installing frontend dependencies..."
-npm install
+echo "📦 Installing frontend dependencies in: $FRONTEND_DIR"
+cd "$FRONTEND_DIR"
 
+# Only install if package.json exists
+if [ ! -f "package.json" ]; then
+  echo "❌ package.json not found in React directory!"
+  exit 1
+fi
+
+npm install --legacy-peer-deps
 echo "🏗️  Building React app..."
 npm run build
-cd ..
+echo "✅ React build completed successfully."
 
-# Start backend
-cd football-backend
-echo "🎯 Starting FastAPI backend..."
-uvicorn main:app --host 0.0.0.0 --port 10000
+# --------------------------
+# 2️⃣  Start the backend
+# --------------------------
+cd "$ROOT_DIR/football-backend"
+
+# Check backend main file
+if [ ! -f "main.py" ]; then
+  echo "❌ Could not find main.py in football-backend!"
+  exit 1
+fi
+
+echo "🎯 Starting FastAPI backend with uvicorn..."
+exec uvicorn main:app --host 0.0.0.0 --port 10000
