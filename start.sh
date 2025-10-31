@@ -38,7 +38,7 @@ fi
 # ============================================================
 # 2️⃣  START FASTAPI BACKEND
 # ============================================================
-BACKEND_DIR="$ROOT_DIR/football-backend"
+BACKEND_DIR="$ROOT_DIR/football-backend/FOOTBALLLLLL"
 
 if [ -d "$BACKEND_DIR" ]; then
   cd "$BACKEND_DIR"
@@ -48,12 +48,14 @@ if [ -d "$BACKEND_DIR" ]; then
     exit 1
   fi
 
-  echo "🎯 Starting FastAPI backend..."
+  echo "🎯 Starting FastAPI backend from $(pwd)..."
+
   # Ensure proper permissions for uvicorn
   chmod +x "$(which uvicorn)" || true
+
   PORT=${PORT:-10000}
-exec uvicorn main:app --host 0.0.0.0 --port $PORT
+  exec uvicorn main:app --host 0.0.0.0 --port $PORT
 else
-  echo "❌ Backend directory football-backend not found!"
+  echo "❌ Backend directory $BACKEND_DIR not found!"
   exit 1
 fi

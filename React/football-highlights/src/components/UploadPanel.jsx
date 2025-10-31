@@ -14,10 +14,10 @@ export default function UploadPanel({ onVideoSelect }) {
 
     // ✅ Use backend-served path for stable playback
     const backendBase =
-  window.location.hostname === "localhost"
-    ? "http://127.0.0.1:10000"  // your local FastAPI port
-    : `${window.location.origin.replace("http", "https")}`;  // Render domain
-
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1"
+    ? "http://127.0.0.1:8000"
+    : `https://${window.location.host.replace("www.", "")}`;
 const backendUrl = `${backendBase}/outputs/uploads/${file.name}`;
 onVideoSelect(backendUrl);
 
@@ -25,6 +25,8 @@ const formData = new FormData();
 formData.append("file", file);
 
 try {
+  console.log("Backend base URL:", backendBase);
+
   const res = await fetch(`${backendBase}/process_video`, {
     method: "POST",
     body: formData,

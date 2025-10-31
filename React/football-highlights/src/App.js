@@ -9,24 +9,26 @@ export default function App() {
   const socketRef = useRef(null);
   const logRef = useRef(null);
 
-  // ✅ Smooth scroll to bottom of logs when new updates arrive
+  // ✅ Smooth scroll to bottom when new logs appear
   useEffect(() => {
     if (logRef.current) {
       logRef.current.scrollTop = logRef.current.scrollHeight;
     }
   }, [statusMessages]);
 
-  // ✅ WebSocket connection
+  // ✅ Smart WebSocket connection (works for local + Render)
   const startWebSocket = () => {
-    if (socketRef.current) socketRef.current.close(); // cleanup old one
+    if (socketRef.current) socketRef.current.close();
 
-    const backendBase =
-    window.location.hostname === "localhost"
-    ? "ws://127.0.0.1:10000"
-    : `wss://${window.location.host.replace("www.", "")}`;
+    // auto-detect correct backend address
+    const backendWs =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1"
+        ? "ws://127.0.0.1:8000/ws/goals" // local backend
+        : `wss://${window.location.host.replace("www.", "")}/ws/goals`; // Render deploy
 
-  const socket = new WebSocket(`${backendBase}/ws/goals`);
-
+    console.log("🔗 Connecting WebSocket to:", backendWs);
+    const socket = new WebSocket(backendWs);
     socketRef.current = socket;
 
     socket.onopen = () => {
@@ -37,42 +39,42 @@ export default function App() {
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-
         if (data.type === "status") {
-          // ✅ Keep only last 100 to avoid lag
-          setStatusMessages((prev) => {
-            const msgs = [...prev, data.message];
-            return msgs.slice(-100);
-          });
+          setStatusMessages((prev) =>
+            [...prev, data.message].slice(-100) // keep last 100
+          );
         } else if (data.type === "goal") {
           console.log("🎯 New goal:", data);
-          
           setHighlights((prev) => {
-            if (prev.some(h => h.url === data.url)) return prev;
-            return [...prev, data]
-        });
+            if (prev.some((h) => h.url === data.url)) return prev;
+            return [...prev, data];
+          });
         }
       } catch (err) {
         console.error("Message parse error:", err);
       }
     };
 
-    socket.onclose = () => {
-      console.log("❌ WebSocket disconnected");
-      setStatusMessages((prev) => [...prev, "Disconnected from backend"]);
-    };
-
     socket.onerror = (err) => {
       console.warn("⚠️ WebSocket error:", err);
       setStatusMessages((prev) => [...prev, "WebSocket error occurred"]);
     };
+
+    socket.onclose = (e) => {
+      console.warn("❌ WebSocket closed:", e.reason);
+      setStatusMessages((prev) => [...prev, "Disconnected from backend"]);
+      // 🔁 Auto-reconnect after 3s (for Render restarts)
+      setTimeout(startWebSocket, 3000);
+    };
   };
 
-  // ✅ Start WebSocket 1 second after upload (backend ready)
+  // ✅ Trigger WebSocket 1s after upload
   const handleVideoSelect = (url) => {
     setVideoURL(url);
     setHighlights([]);
-    setStatusMessages(["Video uploaded successfully. Starting backend pipeline..."]);
+    setStatusMessages([
+      "Video uploaded successfully. Starting backend pipeline...",
+    ]);
     setTimeout(startWebSocket, 1000);
   };
 
@@ -85,7 +87,7 @@ export default function App() {
       </header>
 
       <div className="flex flex-1 p-4 gap-4 overflow-hidden">
-        {/* Left panel: Upload + playback */}
+        {/* Left: Upload + Playback */}
         <div className="w-1/2 bg-gray-800 p-4 rounded-lg flex flex-col">
           <UploadPanel onVideoSelect={handleVideoSelect} />
           {videoURL && (
@@ -98,7 +100,7 @@ export default function App() {
           )}
         </div>
 
-        {/* Right panel: Highlights + Live status */}
+        {/* Right: Highlights + Status */}
         <div className="w-1/2 bg-gray-800 p-4 rounded-lg border border-gray-700 overflow-y-auto">
           <h2 className="text-2xl font-semibold text-yellow-400 mb-3">
             Goal Highlights

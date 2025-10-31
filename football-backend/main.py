@@ -66,7 +66,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # for local testing; restrict later for prod
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -178,22 +178,30 @@ async def send_goal_update(goal_id: int, clip_path: str):
 # ------------------------------------------------------
 @app.post("/process_video")
 async def process_video(file: UploadFile = File(...)):
-    print("/process_video endpoint HIT!") 
     """Receives an uploaded football video and runs the highlight pipeline."""
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
-    video_path = os.path.join(UPLOAD_DIR, file.filename)
-    global LAST_UPLOADED_VIDEO_PATH 
+    print("🚀 /process_video endpoint HIT!")
 
-    # Save uploaded file
+    # === Fix 1: Always use absolute upload dir ===
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+    # === Fix 2: Save uploaded video ===
+    video_path = os.path.join(UPLOAD_DIR, file.filename)
     with open(video_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    LAST_UPLOADED_VIDEO_PATH = video_path
 
+    global LAST_UPLOADED_VIDEO_PATH
+    LAST_UPLOADED_VIDEO_PATH = video_path
     print(f"🎥 Uploaded video saved to: {video_path}")
+
+    # Notify clients
     await broadcast_status("Video upload successful. Starting highlight extraction...")
 
     try:
-        # Run pipeline generator
+        # === Fix 3: Ensure run_k_pipeline_live import path ===
+        from FOOTBALLLLLL.k_run_pipeline import run_k_pipeline_live
+
         async for update in run_k_pipeline_live(video_path):
             kind = update.get("type")
 
@@ -208,7 +216,6 @@ async def process_video(file: UploadFile = File(...)):
                 goal_id = update.get("goal_id", 0)
                 clip_rel_path = update.get("clip_rel_path")
 
-                # prevent duplicates — skip if this goal already sent
                 if not hasattr(process_video, "_sent_goals"):
                     process_video._sent_goals = set()
 
@@ -216,19 +223,19 @@ async def process_video(file: UploadFile = File(...)):
                     process_video._sent_goals.add(clip_rel_path)
                     await send_goal_update(goal_id, clip_rel_path)
 
-
-
             elif kind == "done":
                 elapsed = update.get("elapsed", 0)
                 await broadcast_status(f"Processing complete in {elapsed:.1f} seconds")
 
+        print("✅ Highlights extraction completed successfully.")
         return {"status": "ok", "message": "Highlights extraction completed"}
 
     except Exception as e:
-        err_msg = f"Pipeline failed: {e}"
+        err_msg = f"❌ Pipeline failed: {e}"
         print(err_msg)
         await broadcast_status(err_msg)
         return {"status": "error", "message": str(e)}
+
 from fastapi.staticfiles import StaticFiles
 
 app.mount("/", StaticFiles(directory="../React/football-highlights/build", html=True), name="frontend")
