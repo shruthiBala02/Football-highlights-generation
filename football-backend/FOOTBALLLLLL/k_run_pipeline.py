@@ -119,8 +119,10 @@ from pathlib import Path
 import torch
 
 # --- Local imports ---
-from k3_goal_detector import run_k3_detector
+from FOOTBALLLLLL.k3_goal_detector import run_k3_detector
+
 from k5_report import build_report
+
 
 import subprocess
 import shlex
