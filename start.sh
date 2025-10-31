@@ -51,7 +51,8 @@ if [ -d "$BACKEND_DIR" ]; then
   echo "🎯 Starting FastAPI backend..."
   # Ensure proper permissions for uvicorn
   chmod +x "$(which uvicorn)" || true
-  exec uvicorn main:app --host 0.0.0.0 --port 10000
+  PORT=${PORT:-10000}
+exec uvicorn main:app --host 0.0.0.0 --port $PORT
 else
   echo "❌ Backend directory football-backend not found!"
   exit 1

@@ -20,7 +20,13 @@ export default function App() {
   const startWebSocket = () => {
     if (socketRef.current) socketRef.current.close(); // cleanup old one
 
-    const socket = new WebSocket("ws://127.0.0.1:8000/ws/goals");
+    const backendBase =
+    window.location.hostname === "localhost"
+    ? "ws://127.0.0.1:10000"
+    : `wss://${window.location.host.replace("www.", "")}`;
+
+  const socket = new WebSocket(`${backendBase}/ws/goals`);
+
     socketRef.current = socket;
 
     socket.onopen = () => {
