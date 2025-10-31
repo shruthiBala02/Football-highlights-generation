@@ -1,10 +1,11 @@
+import sys, os
+sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "FOOTBALLLLLL")))
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import asyncio
-import os
 import shutil
-import sys
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.middleware import Middleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -53,7 +54,8 @@ app.add_middleware(LimitUploadSizeMiddleware, max_upload_size=2_000_000_000)
 # Import FOOTBALLLLLL pipeline
 # ------------------------------------------------------
 sys.path.append(r"C:\Users\MYPC\Desktop\Football application\football-backend\FOOTBALLLLLL")
-from k_run_pipeline import run_k_pipeline_live  # this must yield async updates
+from FOOTBALLLLLL.k_run_pipeline import run_k_pipeline_live
+  # this must yield async updates
 
 # ------------------------------------------------------
 # FastAPI app setup
