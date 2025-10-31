@@ -1,11 +1,13 @@
 #!/bin/bash
-set -e  # Exit immediately on error
+set -e  # Exit on any error
+
+# === Resolve root directory ===
 ROOT_DIR="$(dirname "$(realpath "$0")")"
 echo "🚀 Starting build process from $ROOT_DIR"
 
-# --------------------------
-# 1️⃣ Build React frontend
-# --------------------------
+# ============================================================
+# 1️⃣  BUILD REACT FRONTEND (inside React/football-highlights)
+# ============================================================
 FRONTEND_DIR="$ROOT_DIR/React/football-highlights"
 
 if [ -d "$FRONTEND_DIR" ]; then
@@ -20,8 +22,12 @@ if [ -d "$FRONTEND_DIR" ]; then
   echo "📦 Installing frontend dependencies..."
   npm install --legacy-peer-deps
 
-  echo "🏗️  Building React app..."
-  npm run build
+  echo "🔧 Fixing react-scripts permission issues..."
+  chmod +x ./node_modules/.bin/react-scripts || true
+
+  echo "🏗️  Building React app safely..."
+  node node_modules/react-scripts/bin/react-scripts.js build
+
   echo "✅ React build completed successfully."
   cd "$ROOT_DIR"
 else
@@ -29,9 +35,9 @@ else
   exit 1
 fi
 
-# --------------------------
-# 2️⃣ Start FastAPI backend
-# --------------------------
+# ============================================================
+# 2️⃣  START FASTAPI BACKEND
+# ============================================================
 BACKEND_DIR="$ROOT_DIR/football-backend"
 
 if [ -d "$BACKEND_DIR" ]; then
@@ -43,6 +49,8 @@ if [ -d "$BACKEND_DIR" ]; then
   fi
 
   echo "🎯 Starting FastAPI backend..."
+  # Ensure proper permissions for uvicorn
+  chmod +x "$(which uvicorn)" || true
   exec uvicorn main:app --host 0.0.0.0 --port 10000
 else
   echo "❌ Backend directory football-backend not found!"
