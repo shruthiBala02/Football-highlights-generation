@@ -38,7 +38,7 @@ fi
 # ============================================================
 # 2️⃣  START FASTAPI BACKEND
 # ============================================================
-BACKEND_DIR="$ROOT_DIR/football-backend/FOOTBALLLLLL"
+BACKEND_DIR="$ROOT_DIR/football-backend"
 
 if [ -d "$BACKEND_DIR" ]; then
   cd "$BACKEND_DIR"
