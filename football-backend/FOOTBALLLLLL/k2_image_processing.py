@@ -106,7 +106,7 @@ def enhance_for_ocr(bgr: np.ndarray) -> np.ndarray:
 # --- TEST BLOCK ---
 if __name__ == "__main__":
     import os
-    from k1_frames_extractor import FrameStreamer
+    from FOOTBALLLLLL.k1_frames_extractor import FrameStreamer
 
     demo_video = os.path.join("Inputs", "Original_video.mp4")
     out_dir = os.path.join("k_OUTPUTS", "k2_demo_outputs")

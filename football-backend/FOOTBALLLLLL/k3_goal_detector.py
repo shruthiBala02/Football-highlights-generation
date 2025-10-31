@@ -26,9 +26,9 @@
 # from ultralytics import YOLO
 # import easyocr
 
-# from k1_frames_extractor import FrameStreamer
-# from k2_image_processing import enhance_for_ocr
-# from k4_highlight_manager import build_event_handler
+# from FOOTBALLLLLL.k1_frames_extractor import FrameStreamer
+# from FOOTBALLLLLL.k2_image_processing import enhance_for_ocr
+# from FOOTBALLLLLL.k4_highlight_manager import build_event_handler
 
 # logging.basicConfig(level=logging.INFO, format="%(message)s")
 # log = logging.getLogger(__name__)
@@ -372,9 +372,9 @@ from matplotlib.ticker import MaxNLocator, FuncFormatter
 from ultralytics import YOLO
 import easyocr
 
-from k1_frames_extractor import FrameStreamer
-from k2_image_processing import enhance_for_ocr
-from k4_highlight_manager import build_event_handler
+from FOOTBALLLLLL.k1_frames_extractor import FrameStreamer
+from FOOTBALLLLLL.k2_image_processing import enhance_for_ocr
+from FOOTBALLLLLL.k4_highlight_manager import build_event_handler
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)

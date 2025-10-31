@@ -18,8 +18,8 @@
 # from pathlib import Path
 
 # # --- Local imports ---
-# from k3_goal_detector import run_k3_detector
-# from k5_report import build_report
+# from FOOTBALLLLLL.k3_goal_detector import run_k3_detector
+# from FOOTBALLLLLL.k5_report import build_report
 
 # # --- Logging setup ---
 # logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -121,7 +121,7 @@ import torch
 # --- Local imports ---
 from FOOTBALLLLLL.k3_goal_detector import run_k3_detector
 
-from k5_report import build_report
+from FOOTBALLLLLL.k5_report import build_report
 
 
 import subprocess
