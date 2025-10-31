@@ -1,0 +1,35 @@
+# ---- CORE PIPELINE DEPENDENCIES ----
+opencv-python>=4.5.5
+numpy>=1.21
+ultralytics>=8.0.0
+torch>=1.13.0
+Pillow>=8.0.0
+matplotlib
+easyocr
+rapidfuzz
+pandas>=1.5.0
+openpyxl>=3.0.10
+psutil
+imageio-ffmpeg
+tqdm
+
+# ---- BACKEND & API ----
+fastapi>=0.110.0
+uvicorn>=0.27.0
+starlette>=0.49.0
+aiofiles>=23.2.1
+python-multipart>=0.0.20
+websockets>=12.0
+watchfiles>=0.21.0
+pydantic>=2.5.0
+typing-extensions>=4.7.0
+
+# ---- OPTIONAL / ADVANCED ----
+transformers>=4.30.0
+accelerate>=0.21.0
+bitsandbytes>=0.41.0
+
+# ---- UTILITIES ----
+colorama>=0.4.6
+idna>=3.4
+requests>=2.31.0

@@ -1,0 +1,48 @@
+# =============================
+# ⚙️  FASTAPI BACKEND
+# =============================
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.db
+*.sqlite3
+.env
+outputs/
+*.mp4
+*.avi
+*.csv
+*.txt
+
+# =============================
+# ⚛️  REACT FRONTEND
+# =============================
+node_modules/
+build/
+dist/
+.cache/
+*.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =============================
+# 🧰  SYSTEM / EDITOR FILES
+# =============================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.bak
+*.swp
+
+# =============================
+# 🚫  Temporary or Large Folders
+# =============================
+__MACOSX/
+*.zip
+*.tar
+*.gz
+*.rar
