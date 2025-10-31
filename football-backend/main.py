@@ -80,6 +80,17 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 app.mount("/outputs", StaticFiles(directory=OUTPUT_DIR), name="outputs")
+from fastapi.responses import FileResponse
+
+# Serve React build as frontend
+FRONTEND_DIR = os.path.join(BASE_DIR, "frontend_build")
+
+@app.get("/")
+def serve_root():
+    index_path = os.path.join(FRONTEND_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"message": "Frontend build not found"}
 
 # ------------------------------------------------------
 # Active WebSocket clients
